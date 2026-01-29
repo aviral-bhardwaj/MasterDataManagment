@@ -1,0 +1,8 @@
+employee_id,first_name,last_name,email,department,job_title,hire_date,salary,manager_id,location
+E001,James,Anderson,james.anderson@company.com,Engineering,Senior Developer,2020-03-15,95000,E010,New York
+E002,Emily,Thompson,emily.thompson@company.com,Marketing,Marketing Manager,2019-07-22,85000,E011,Los Angeles
+E003,David,Garcia,david.garcia@company.com,Engineering,Junior Developer,2023-01-10,65000,E001,New York
+E004,Lisa,Martinez,lisa.martinez@company.com,HR,HR Specialist,2021-09-01,60000,E012,Chicago
+E005,Kevin,Lee,kevin.lee@company.com,Sales,Sales Representative,2022-04-18,55000,E013,Houston
+E006,Rachel,White,rachel.white@company.com,Engineering,DevOps Engineer,2021-11-30,90000,E001,New York
+E007,Mark,Taylor,mark.taylor@company.com,Finance,Financial Analyst,2020-08-12,75000,E014,Chicago

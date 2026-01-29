@@ -1,0 +1,9 @@
+product_id,product_name,category,brand,price,currency,stock_quantity,sku,weight_kg,is_active
+P001,Laptop Pro 15,Electronics,TechBrand,1299.99,USD,150,SKU-LP15-001,2.1,true
+P002,Wireless Mouse,Electronics,TechBrand,29.99,USD,500,SKU-WM-002,0.1,true
+P003,Office Chair,Furniture,ComfortPlus,349.99,USD,75,SKU-OC-003,15.5,true
+P004,Standing Desk,Furniture,ComfortPlus,599.99,USD,40,SKU-SD-004,45.0,true
+P005,USB-C Hub,Electronics,TechBrand,79.99,USD,300,SKU-UH-005,0.2,true
+P006,Monitor 27",Electronics,ViewMax,449.99,USD,120,SKU-M27-006,6.8,true
+P007,Keyboard Mechanical,Electronics,KeyMaster,149.99,USD,200,SKU-KM-007,0.9,true
+P008,Webcam HD,Electronics,ViewMax,89.99,USD,180,SKU-WC-008,0.3,true

@@ -1,0 +1,6 @@
+customer_id,first_name,last_name,email,phone,address,city,country,registration_date,customer_type
+C001,John,Doe,JOHN.DOE@EMAIL.COM,15550101,123 Main Street,New York,USA,2024-01-15,Premium
+C006,Emma,Davis,emma.davis@email.com,+1-555-0106,987 Cedar Ln,Philadelphia,USA,2024-06-18,Standard
+C007,Michael,Miller,michael.m@email.com,+1-555-0107,246 Birch Way,San Antonio,USA,2024-07-22,Premium
+C003,Robert,Johnson,bob.johnson@email.com,5550103,789 Pine Road,Chicago,USA,2024-03-10,Premium
+C008,Sarah,Wilson,sarah.w@email.com,+1-555-0108,135 Walnut St,San Diego,USA,2024-08-30,Standard
