@@ -1,0 +1,6 @@
+product_id,product_name,category,brand,price,currency,stock_quantity,sku,weight_kg,is_active
+P001,Laptop Pro 15 inch,Electronics,TechBrand,1299.99,USD,145,SKU-LP15-001,2.1,true
+P009,Desk Lamp LED,Office,LightUp,45.99,USD,250,SKU-DL-009,1.2,true
+P010,Notebook Set,Office,WritePro,12.99,USD,1000,SKU-NS-010,0.5,true
+P003,Ergonomic Office Chair,Furniture,ComfortPlus,349.99,USD,70,SKU-OC-003,15.5,true
+P011,Cable Organizer,Office,OrganizerPro,19.99,USD,400,SKU-CO-011,0.3,true

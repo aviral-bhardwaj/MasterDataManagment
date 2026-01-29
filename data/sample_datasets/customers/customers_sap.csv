@@ -1,0 +1,6 @@
+customer_id,first_name,last_name,email,phone,address,city,country,registration_date,customer_type
+C001,John,Doe,john.doe@email.com,+1-555-0101,123 Main St,New York,USA,2024-01-15,Premium
+C002,Jane,Smith,jane.smith@email.com,+1-555-0102,456 Oak Ave,Los Angeles,USA,2024-02-20,Standard
+C003,Bob,Johnson,bob.johnson@email.com,+1-555-0103,789 Pine Rd,Chicago,USA,2024-03-10,Premium
+C004,Alice,Williams,alice.w@email.com,+1-555-0104,321 Elm St,Houston,USA,2024-04-05,Standard
+C005,Charlie,Brown,charlie.b@email.com,+1-555-0105,654 Maple Dr,Phoenix,USA,2024-05-12,Premium

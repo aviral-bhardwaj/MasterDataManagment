@@ -1,0 +1,9 @@
+order_id,customer_id,product_id,quantity,unit_price,total_amount,order_date,status,shipping_method,payment_method
+ORD001,C001,P001,1,1299.99,1299.99,2024-06-01,Delivered,Express,Credit Card
+ORD002,C002,P002,2,29.99,59.98,2024-06-02,Delivered,Standard,PayPal
+ORD003,C003,P003,1,349.99,349.99,2024-06-03,Shipped,Express,Credit Card
+ORD004,C001,P005,3,79.99,239.97,2024-06-04,Processing,Standard,Debit Card
+ORD005,C004,P006,1,449.99,449.99,2024-06-05,Delivered,Express,Credit Card
+ORD006,C005,P007,1,149.99,149.99,2024-06-06,Shipped,Standard,PayPal
+ORD007,C002,P004,1,599.99,599.99,2024-06-07,Processing,Express,Credit Card
+ORD008,C006,P008,2,89.99,179.98,2024-06-08,Pending,Standard,Debit Card
