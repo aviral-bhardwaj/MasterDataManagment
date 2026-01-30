@@ -15,7 +15,7 @@ import sys
 import re
 import hashlib
 from datetime import datetime
-from typing import Dict, List, Tuple, Any
+from typing import Dict, Tuple
 
 import pandas as pd
 import numpy as np
@@ -26,7 +26,8 @@ sys.path.insert(0, PROJECT_ROOT)
 
 
 class TestResults:
-    """Track test results"""
+    """Track test results and ensure failures cause test suite to fail."""
+
     def __init__(self):
         self.passed = 0
         self.failed = 0
@@ -37,11 +38,13 @@ class TestResults:
         print(f"  ✓ {test_name}")
 
     def record_fail(self, test_name: str, error: str):
+        """Record a test failure. Failures are accumulated and raised at summary."""
         self.failed += 1
         self.errors.append((test_name, error))
         print(f"  ✗ {test_name}: {error}")
 
-    def summary(self):
+    def summary(self) -> bool:
+        """Print summary and raise AssertionError if any tests failed."""
         total = self.passed + self.failed
         print(f"\n{'='*60}")
         print(f"RESULTS: {self.passed}/{total} tests passed")
@@ -49,7 +52,12 @@ class TestResults:
             print(f"\nFailed tests:")
             for name, error in self.errors:
                 print(f"  - {name}: {error}")
-        return self.failed == 0
+            # Raise AssertionError to ensure pytest fails
+            raise AssertionError(
+                f"{self.failed} test(s) failed: " +
+                ", ".join(name for name, _ in self.errors)
+            )
+        return True
 
 
 results = TestResults()
@@ -205,11 +213,13 @@ def test_schema_detection():
     }
 
     for col, expected_type in expected_types.items():
-        if col in schema:
-            if schema[col] == expected_type:
-                results.record_pass(f"Column '{col}' type: {schema[col]}")
-            else:
-                results.record_fail(f"Column '{col}' type", f"Expected {expected_type}, got {schema[col]}")
+        if col not in schema:
+            # Explicitly fail when expected column is missing (schema regression)
+            results.record_fail(f"Column '{col}' exists", f"Expected column '{col}' not found in schema")
+        elif schema[col] == expected_type:
+            results.record_pass(f"Column '{col}' type: {schema[col]}")
+        else:
+            results.record_fail(f"Column '{col}' type", f"Expected {expected_type}, got {schema[col]}")
 
     # Test column categorization
     categories = detector.categorize_columns(df)
@@ -237,12 +247,18 @@ def add_metadata(df: pd.DataFrame, source_name: str, source_file: str) -> pd.Dat
 
 
 def generate_record_hash(df: pd.DataFrame) -> pd.DataFrame:
-    """Generate MD5 hash for each record."""
+    """Generate MD5 hash for each record.
+
+    Note: MD5 is used intentionally for non-cryptographic purposes (record
+    fingerprinting/deduplication). It provides fast, deterministic hashing
+    suitable for data pipeline record identification. Not used for security.
+    """
     df = df.copy()
     data_cols = [c for c in df.columns if not c.startswith('_')]
 
     def hash_row(row):
         values = '||'.join(str(row[c]) for c in data_cols)
+        # MD5 used for record fingerprinting, not cryptographic security
         return hashlib.md5(values.encode()).hexdigest()
 
     df['_record_hash'] = df.apply(hash_row, axis=1)
@@ -296,8 +312,13 @@ def test_pre_bronze_layer():
 # =============================================================================
 
 def apply_quality_rules(df: pd.DataFrame, rules: Dict[str, str]) -> Tuple[pd.DataFrame, Dict[str, int]]:
-    """Apply quality rules and return valid records with statistics."""
+    """Apply quality rules and return only valid records with statistics.
+
+    Invalid records are filtered out to prevent bad data from flowing downstream.
+    """
     stats = {}
+    # Start with all records valid, then AND each rule's mask
+    cumulative_mask = pd.Series([True] * len(df), index=df.index)
 
     for rule_name, rule_expr in rules.items():
         # Convert SQL-like expression to pandas
@@ -316,12 +337,18 @@ def apply_quality_rules(df: pd.DataFrame, rules: Dict[str, str]) -> Tuple[pd.Dat
             val = float(parts[1].strip())
             mask = df[col] > val
         else:
-            mask = pd.Series([True] * len(df))
+            mask = pd.Series([True] * len(df), index=df.index)
 
         failed_count = (~mask).sum()
-        stats[rule_name] = {'passed': mask.sum(), 'failed': failed_count}
+        stats[rule_name] = {'passed': int(mask.sum()), 'failed': int(failed_count)}
 
-    return df, stats
+        # Accumulate: record must pass ALL rules
+        cumulative_mask = cumulative_mask & mask
+
+    # Filter DataFrame to only include valid records
+    valid_df = df[cumulative_mask].copy()
+
+    return valid_df, stats
 
 
 def test_bronze_layer(pre_bronze_tables: Dict[str, pd.DataFrame]):
@@ -396,14 +423,23 @@ def clean_and_transform(df: pd.DataFrame, source_type: str) -> pd.DataFrame:
 
 
 def generate_unique_identifier(df: pd.DataFrame, source_type: str) -> pd.DataFrame:
-    """Generate unique identifier for deduplication."""
+    """Generate unique identifier for deduplication.
+
+    Priority for customers: email > phone > name+city
+    Empty strings after normalization are treated as missing values.
+    """
     df = df.copy()
+
+    def is_valid_value(val) -> bool:
+        """Check if value is both not null AND not empty string."""
+        return pd.notna(val) and str(val).strip() != ''
 
     if source_type == 'customers':
         # Priority: email > phone > name+city
+        # Check both notna AND truthiness to avoid empty string collisions
         df['unique_identifier'] = df.apply(
-            lambda r: r['email'] if pd.notna(r.get('email')) and r.get('email')
-            else r.get('phone', '') if pd.notna(r.get('phone'))
+            lambda r: r['email'] if is_valid_value(r.get('email'))
+            else r['phone'] if is_valid_value(r.get('phone'))
             else f"{r.get('first_name', '')}_{r.get('city', '')}",
             axis=1
         )
